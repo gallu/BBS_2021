@@ -1,0 +1,18 @@
+{#  paging.twig  #}
+{% if 1 == page_num %}
+  最初のページ
+{% else %}
+  <a href="./index.php">最初のページ</a>
+{% endif %}
+ | 
+{% if 1 == page_num %}
+  《《前に戻る《《
+{% else %}
+  <a href="./index.php?p={{ before_page_num|e('url') }}">《《前に戻る《《</a>
+{% endif %}
+ | 
+{% if true == next_flg %}
+  <a href="./index.php?p={{ next_page_num|e('url') }}">》》次に進む》》</a><br>
+{% else %}
+  》》次に進む》》
+{% endif %}

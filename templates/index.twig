@@ -1,0 +1,54 @@
+{#  index.twig  #}
+<H1>BBS</h1>
+
+<h2>書き込み</h2>
+{% if flash.success == true %}書き込めたよ！！<br>{% endif %}
+{% if flash.error.csrf == true %}遷移エラーです orz<br>{% endif %}
+
+<form action="./write.php" method="post">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+ハンドル名:<input name="handle" value="{{ flash.datum.handle }}"><br>
+
+{% if flash.error.title == true %}タイトル、書いて？<br>{% endif %}
+タイトル:<input name="title" value="{{ flash.datum.title }}"><br>
+
+削除用コード:<input name="del_code" value="{{ flash.datum.del_code }}"><br>
+
+{% if flash.error.body == true %}本文、書いて？<br>{% endif %}
+本文:<textarea name="body">{{ flash.datum.body }}</textarea><br>
+
+<button>書き込む</button>
+</form>
+
+<h2>表示</h2>
+{% if flash.delete == true %}書き込みを削除しました！！<br>{% endif %}
+
+{{ page_num }}ページ目<br>
+{% include "parts/paging.twig" %}
+<hr>
+{% for val in list %}
+<a href="./index.php?p={{ page_num|e('url') }}#{{ val.bbs_id|e('url') }}" name="{{ val.bbs_id|e('url') }}">■</a>
+  {{ val.title }}({{ val.handle }}) {{ val.created_at | date("Y/m/d H:i") }}<br>
+  {{ val.body | nl2br }} 
+<form action="./delete.php" method="post">
+  <input type="hidden" name="bbs_id" value="{{ val.bbs_id }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input size=6 name="del_code">
+  <button>削除</button>
+</form>
+<hr width="60%">
+<form action="./comment.php" method="post">
+  <input type="hidden" name="bbs_id" value="{{ val.bbs_id }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+  <input type="hidden" name="page_num" value="{{ page_num }}">
+  <input name="comment">
+  <button>コメントする</button>
+</form>
+{% for com in val.comment %}
+  {{ com.comment_body }}({{ com.created_at | date("Y/m/d H:i") }})<br>
+{% endfor %}
+<hr>
+{% endfor %}
+{% include "parts/paging.twig" %}
+
